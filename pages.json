@@ -1,0 +1,131 @@
+{
+	"pages": [
+		{
+			"path": "pages/tabBar/index/index",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		}
+	],
+	"subPackages": [
+		{
+      "root": "pages/subPackages/icon",
+      "pages": [
+        {
+          "path": "icon/icon"
+        }
+      ]
+    },
+    {
+      "root": "pages/subPackages/button",
+      "pages": [
+        {
+          "path": "button"
+        }
+      ]
+    },
+    {
+      "root": "pages/subPackages/tag",
+      "pages": [
+        {
+          "path": "tag"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/form",
+      "pages": [
+        {
+          "path": "form/form"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/tree",
+      "pages": [
+        {
+          "path": "tree/tree"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/collapse",
+      "pages": [
+        {
+          "path": "collapse/collapse"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/popup",
+      "pages": [
+        {
+          "path": "popup/popup"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/search",
+      "pages": [
+        {
+          "path": "search/search"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/load",
+      "pages": [
+        {
+          "path": "load/load"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/footer",
+      "pages": [
+        {
+          "path": "footer/footer"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/step",
+      "pages": [
+        {
+          "path": "step/step"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/select-page",
+      "pages": [
+        {
+          "path": "select-page/select-page"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/menu",
+      "pages": [
+        {
+          "path": "menu/menu"
+        }
+      ]
+    },
+		{
+      "root": "pages/subPackages/alert",
+      "pages": [
+        {
+          "path": "alert/alert"
+        }
+      ]
+    }
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "config-ui",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {}
+}

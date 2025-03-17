@@ -12,7 +12,7 @@
       "root": "pages/subPackages/icon",
       "pages": [
         {
-          "path": "icon/icon"
+          "path": "icon"
         }
       ]
     },
@@ -36,7 +36,7 @@
       "root": "pages/subPackages/form",
       "pages": [
         {
-          "path": "form/form"
+          "path": "form"
         }
       ]
     },
@@ -44,7 +44,7 @@
       "root": "pages/subPackages/tree",
       "pages": [
         {
-          "path": "tree/tree"
+          "path": "tree"
         }
       ]
     },
@@ -52,7 +52,7 @@
       "root": "pages/subPackages/collapse",
       "pages": [
         {
-          "path": "collapse/collapse"
+          "path": "collapse"
         }
       ]
     },
@@ -60,7 +60,7 @@
       "root": "pages/subPackages/popup",
       "pages": [
         {
-          "path": "popup/popup"
+          "path": "popup"
         }
       ]
     },
@@ -68,7 +68,7 @@
       "root": "pages/subPackages/search",
       "pages": [
         {
-          "path": "search/search"
+          "path": "search"
         }
       ]
     },
@@ -76,7 +76,7 @@
       "root": "pages/subPackages/load",
       "pages": [
         {
-          "path": "load/load"
+          "path": "load"
         }
       ]
     },
@@ -84,7 +84,7 @@
       "root": "pages/subPackages/footer",
       "pages": [
         {
-          "path": "footer/footer"
+          "path": "footer"
         }
       ]
     },
@@ -92,7 +92,7 @@
       "root": "pages/subPackages/step",
       "pages": [
         {
-          "path": "step/step"
+          "path": "step"
         }
       ]
     },
@@ -100,7 +100,7 @@
       "root": "pages/subPackages/select-page",
       "pages": [
         {
-          "path": "select-page/select-page"
+          "path": "select-page"
         }
       ]
     },
@@ -108,7 +108,7 @@
       "root": "pages/subPackages/menu",
       "pages": [
         {
-          "path": "menu/menu"
+          "path": "menu"
         }
       ]
     },
@@ -116,7 +116,7 @@
       "root": "pages/subPackages/alert",
       "pages": [
         {
-          "path": "alert/alert"
+          "path": "alert"
         }
       ]
     }

@@ -1,8 +1,8 @@
 <template>
   <view class="co-default-page">
     <view class="co-flex-row co-padding-left-12 co-padding-right-12">
-      <co-button class="co-flex-1" style="width: 100%;" type="warning" @click="change('horizontal')">横排</co-button>
-      <co-button class="co-flex-1" style="width: 100%;" type="primary" @click="change('vertical')">竖排</co-button>
+      <co-button class="co-flex-1" style="width: 100%;" type="warning" @click="layoutChange('horizontal')">横排</co-button>
+      <co-button class="co-flex-1" style="width: 100%;" type="primary" @click="layoutChange('vertical')">竖排</co-button>
     </view>
 
     <view class="title">Text 纯文本</view>
@@ -22,7 +22,13 @@
 
     <view class="title">Datetime 时间选择器</view>
     <co-form v-model="timeFormData" :options="timeOptions"></co-form>
-    
+
+    <view class="title">Dictionary 字典选择器</view>
+    <co-form v-model="dictFormData" :options="dictOptions"></co-form>
+
+    <view class="title">Area 省市区选择器</view>
+    <co-form v-model="areaFormData" :options="areaOptions"></co-form>
+
     <view class="title">级联选择器</view>
     <co-form v-model="cascaderFormData" :options="cascaderOptions"></co-form>
 
@@ -36,6 +42,7 @@
 export default {
   data() {
     return {
+      layout: 'horizontal',
       textFormData: {
         arrow: '一般配合点击事件',
         text: '我是纯文本'
@@ -44,8 +51,8 @@ export default {
       inputFormData: {
         text: '输入框',
         number: 123,
-        idcard: 440881202401011234,
-        digit: 123.1,
+        idcard: '110111199001011234',
+        digit: 1.1,
         safePassword: 123456,
         nickname: '这是昵称',
         arrow: '选中后的值',
@@ -68,24 +75,42 @@ export default {
       gouOptions: [],
       timeFormData: {},
       timeOptions: [],
+      dictFormData: {
+        dict: '1'
+      },
+      dictOptions: [],
       uploadFormData: {},
       uploadOptions: [],
       cascaderFormData: {},
       cascaderOptions: [],
+      areaFormData: {},
+      areaOptions: [],
     }
   },
   onLoad() {
-    this.change('horizontal')
+    this.layoutChange('horizontal')
   },
-  methods: {
-    change(type) {
-      const setLayout = (options) => {
-        for (let i = 0; i < options.length; i++) {
-          options[i].layout = type
-        }
-        return options
+  methods: { 
+    layoutChange(type) {
+      this.layout = type
+      this.setTextFormOptions()
+      this.setInputFormOptions()
+      this.setTextareaFormOptions()
+      this.setRadioFormOptions()
+      this.setGouFormOptions()
+      this.setTimeFormOptions()
+      this.setDictFormOptions()
+      this.setAreaFormOptions()
+      this.setUploadFormOptions()
+      this.setCascaderFormOptions()
+    },
+    setOptionsLayout(options) {
+      for (let i = 0; i < options.length; i++) {
+        options[i].layout = this.layout
       }
-
+      return options
+    },
+    setTextFormOptions() {
       const textOptions = [
         {
           field: 'text',
@@ -102,8 +127,9 @@ export default {
           methodName: 'arrowClick'
         }
       ]
-      this.textOptions = setLayout(textOptions)
-
+      this.textOptions = this.setOptionsLayout(textOptions)
+    },
+    setInputFormOptions() {
       const inputOptions = [
         {
           field: 'text',
@@ -148,8 +174,9 @@ export default {
           inputType: 'nickname'
         }
       ]
-      this.inputOptions = setLayout(inputOptions)
-
+      this.inputOptions = this.setOptionsLayout(inputOptions)
+    },
+    setTextareaFormOptions() {
       const textareaOptions = [
         {
           field: 'textarea',
@@ -158,8 +185,9 @@ export default {
           labelType: 'textarea'
         }
       ]
-      this.textareaOptions = setLayout(textareaOptions)
-
+      this.textareaOptions = this.setOptionsLayout(textareaOptions)
+    },
+    setRadioFormOptions() {
       const radioOptions = [
         {
           field: 'radio',
@@ -190,8 +218,9 @@ export default {
           ]
         }
       ]
-      this.radioOptions = setLayout(radioOptions)
-      
+      this.radioOptions = this.setOptionsLayout(radioOptions)
+    },
+    setGouFormOptions() {
       const gouOptions = [
         {
           field: 'gou1',
@@ -224,8 +253,9 @@ export default {
           ]
         }
       ]
-      this.gouOptions = setLayout(gouOptions)
-
+      this.gouOptions = this.setOptionsLayout(gouOptions)
+    },
+    setTimeFormOptions() {
       const timeOptions = [
         {
           field: 'time',
@@ -264,8 +294,33 @@ export default {
           pickerType: 'datetimerange'
         }
       ]
-      this.timeOptions = setLayout(timeOptions)
-
+      this.timeOptions = this.setOptionsLayout(timeOptions)
+    },
+    setDictFormOptions() {
+      const dictOptions = [
+        {
+          field: 'dict',
+          label: '字典',
+          component: 'Picker',
+          pickerType: 'dictionary',
+          dictCode: 'DICT_NAME_CODE',
+        },
+      ]
+      this.dictOptions = this.setOptionsLayout(dictOptions)
+    },
+    setAreaFormOptions() {
+      const areaOptions = [
+        {
+          field: 'area',
+          label: '地区',
+          component: 'Picker',
+          pickerType: 'area',
+          emitPath: true,
+        },
+      ]
+      this.areaOptions = this.setOptionsLayout(areaOptions)
+    },
+    setCascaderFormOptions() {
       const cascaderOptions = [
         {
           field: 'cascader',
@@ -317,26 +372,14 @@ export default {
             {
               value: 'resource',
               label: 'Resource',
-              children: [
-                // {
-                //   value: 'axure',
-                //   label: 'Axure Components',
-                // },
-                // {
-                //   value: 'sketch',
-                //   label: 'Sketch Templates',
-                // },
-                // {
-                //   value: 'docs',
-                //   label: 'Design Documentation',
-                // },
-              ],
+              children: [],
             },
           ]
         },
       ]
-      this.cascaderOptions = setLayout(cascaderOptions)
-
+      this.cascaderOptions = this.setOptionsLayout(cascaderOptions)
+    },
+    setUploadFormOptions() {
       const uploadOptions = [
         {
           field: 'upload',

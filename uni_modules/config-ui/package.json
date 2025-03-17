@@ -1,12 +1,12 @@
 {
   "id": "config-ui",
   "displayName": "config-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "config-ui，是以配置驱动的UI组件库，涵盖常用的组件，通过简单的配置即可生成内容丰富、功能强大的表单。",
   "keywords": [
     "config-ui"
 ],
-  "repository": "https://github.com/coder-Alan/config-ui/tree/main/uni-app/vue2",
+  "repository": "https://github.com/coder-Alan/config-ui-uv2",
   "engines": {
     "HBuilderX": "^3.1.0"
   },

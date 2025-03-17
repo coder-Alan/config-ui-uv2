@@ -7,13 +7,19 @@
 [![release](https://img.shields.io/github/v/release/coder-Alan/config-ui-uv2?style=flat-square)](https://gitee.com/coder-Alan/config-ui-uv2/releases)
 [![license](https://img.shields.io/github/license/umicro/uView2.0?style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
 
+
+
+[TOC]
+
+
+
 ## 说明
 
 config UI，是以配置驱动的UI组件库，涵盖常用的组件，通过简单的配置即可生成内容丰富、功能强大的表单。
 
 ## 安装
 
-#### **uni-app插件市场链接** —— [https://ext.dcloud.net.cn/plugin?id=22467](https://ext.dcloud.net.cn/plugin?id=22467)
+**uni-app插件市场链接** —— [https://ext.dcloud.net.cn/plugin?id=22469](https://ext.dcloud.net.cn/plugin?id=22469)
 
 ## 引入
 
@@ -29,6 +35,8 @@ config UI，是以配置驱动的UI组件库，涵盖常用的组件，通过简
 在 `main.js` 文件进行仓库初始化
 
 ```js
+import App from './App'
+
 // #ifndef VUE3
 import Vue from 'vue'
 import './uni.promisify.adaptor'
@@ -37,8 +45,28 @@ import ConfigStore from './uni_modules/config-ui/utils/config-store'
 
 ConfigStore.init({
   dictConfig: {
-    key: '', // 字典编码的字段名
-    getFun: (code) => {}, // {Function} 获取字典的接口，args: code 字典编码
+    labelKey: 'dictName', // 字典值对应的中文名的字段名
+    valueKey: 'dictValue', // 字典值的字段名
+    getFun: (code) => { // {Function} 获取字典的接口，args: code 字典编码
+      return new Promise((resolve, reject) => {
+        // mock data
+        setTimeout(() => {
+          if (code === 'DICT_NAME_CODE') {
+            resolve([
+              { dictName: '字典项1', dictValue: '1' },
+              { dictName: '字典项2', dictValue: '2' },
+              { dictName: '字典项3', dictValue: '3' },
+              { dictName: '字典项4', dictValue: '4' },
+            ])
+          }
+          else {
+            resolve([
+              { dictName: '其他', dictValue: '0' },
+            ])
+          }
+        }, 5000)
+      })
+    },
   },
   uploadConfig: {
     url: '', // 上传接口
@@ -52,9 +80,52 @@ ConfigStore.init({
     getUrlFun: (fileId) => {}, // {Function} 获取下载路径，args: fileId 文件id，需返回 String 类型 url。
   },
   geoConfig: {
-    key: '', // 地理信息编码的字段名
-    value: '', // 地理信息编码对应的中文名的字段名
-    getFun: (code) => {}, // {Function} 获取地理信息接口, args: code 区域编码, args 为空时查全部省份，需返回 Promise.resolve(Array) 类型。
+    key: 'code', // 地理信息编码的字段名
+    value: 'name', // 地理信息编码对应的中文名的字段名
+    getFun: (code) => { // {Function} 获取地理信息接口, args: code 区域编码, args 为空时查全部省份，需返回 Promise.resolve(Array) 类型。
+      return new Promise((resolve, reject) => {
+        // mock data
+        setTimeout(() => {
+          if (!code) {
+            resolve([
+              { code: '110000', name: '北京市' },
+              { code: '130000', name: '河北省' },
+              { code: '140000', name: '山西省' },
+              { code: '150000', name: '内蒙古自治区' },
+            ])
+          }
+          else if (code === '110000') {
+            resolve([
+              { code: '110100', name: '北京市' },
+            ])
+          }
+          else if (code === '110100') {
+            resolve([
+              { code: '110101', name: '东城区' },
+              { code: '110102', name: '西城区' },
+              { code: '110105', name: '朝阳区' },
+            ])
+          }
+          else if (code === '130000') {
+            resolve([
+              { code: '130100', name: '石家庄市' },
+              { code: '130200', name: '唐山市' },
+              { code: '130300', name: '秦皇岛市' },
+            ])
+          }
+          else if (code === '130100') {
+            resolve([
+              { code: '130102', name: '长安区' },
+              { code: '130104', name: '桥西区' },
+              { code: '130105', name: '新华区' },
+            ])
+          }
+          else {
+            resolve([])
+          }
+        }, 3000);
+      })
+    },
   },
 })
 
@@ -65,9 +136,17 @@ const app = new Vue({
 })
 app.$mount()
 // #endif
+
+// #ifdef VUE3
+import { createSSRApp } from 'vue'
+export function createApp() {
+  const app = createSSRApp(App)
+  return {
+    app
+  }
+}
+// #endif
 ```
-
-
 
 ## 使用方法
 
@@ -81,11 +160,11 @@ app.$mount()
 
 ## 文档说明
 
-- ### co-form
+### co-form 表单
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名        | 说明                                                    | 类型          | 默认值                  |
 | ------------- | ------------------------------------------------------- | ------------- | ----------------------- |
@@ -95,7 +174,7 @@ app.$mount()
 | before-upload | 上传前的回调函数                                        | Function      | () => Promise.resolve() |
 | before-remove | 删除前的回调函数                                        | Function      | () => Promise.resolve() |
 
-##### options
+`options`
 
 | 属性       | 说明                                                   | 类型    | 默认值 |
 | ---------- | ------------------------------------------------------ | ------- | ------ |
@@ -109,14 +188,14 @@ app.$mount()
 | rule       | 表单验证规则，具体配置见下表，更详细可查看 validate.js | object  | -      |
 | ...        | 其余配置为对应组件的配置，具体配置见下表               |         |        |
 
-##### options.showConfig
+`options.showConfig`
 
 | 属性    | 说明                                 | 类型          | 默认值 |
 | ------- | ------------------------------------ | ------------- | ------ |
 | type    | 对比方式，具体配置见下表             | string        | all    |
 | options | 显示条件的配置项集合，具体配置见下表 | array[object] | -      |
 
-##### options.showConfig.options
+`options.showConfig.options`
 
 | 属性  | 说明                                                         | 类型                 | 默认值 |
 | ----- | ------------------------------------------------------------ | -------------------- | ------ |
@@ -124,14 +203,14 @@ app.$mount()
 | terms | 对比条件，具体配置见下表                                     | string               | ===    |
 | value | 表单里某个对比字段的值，如果是数组，说明这个字段是对象里面的某个字段 | string/number/array  | -      |
 
-##### options.rule
+`options.rule`
 
 | 属性    | 说明                 | 类型   | 默认值 |
 | ------- | -------------------- | ------ | ------ |
 | reg     | 验证规则，正则表达式 | RegExp | -      |
 | message | 验证失败提示信息     | string | -      |
 
-##### options.component
+`options.component`
 
 | 类型        | 说明                        |
 | ----------- | --------------------------- |
@@ -141,14 +220,14 @@ app.$mount()
 | Upload      | 代表 CoFormUpload 组件      |
 | CheckButton | 代表 CoFormCheckButton 组件 |
 
-##### options.showConfig.type
+`options.showConfig.type`
 
 | 类型   | 说明               |
 | ------ | ------------------ |
 | all    | 所有条件满足才显示 |
 | anyOne | 任意一项满足就显示 |
 
-##### options.showConfig.options.terms
+`options.showConfig.options.terms`
 
 | 类型      | 说明     |
 | --------- | -------- |
@@ -163,7 +242,7 @@ app.$mount()
 | null      | 为空     |
 | !null     | 不为空   |
 
-#### Events
+`Events`
 
 | 事件名         | 说明                                                         | 回调参数                             |
 | -------------- | ------------------------------------------------------------ | ------------------------------------ |
@@ -172,7 +251,7 @@ app.$mount()
 | clear          | 当点击 CoFormNormal 组件和 CoFormPicker 组件的清除按钮时触发 | 共一个参数，为当前点击的配置项       |
 | * 自定义事件名 | 对应组件的触发事件                                           | 共一个参数，为当前触发的配置项       |
 
-#### Slots
+`Slots`
 
 | 插槽名         | 说明                                                         |
 | -------------- | ------------------------------------------------------------ |
@@ -181,15 +260,15 @@ app.$mount()
 
 
 
-- [ ] **co-form-label**
+#### co-form-label  (内置组件)
 
-Attributes
+`Attributes`
 
 | 属性名 | 说明   | 类型   | 默认值 |
 | ------ | ------ | ------ | ------ |
 | config | 配置项 | object | -      |
 
-config
+`config`
 
 | 属性          | 说明                   | 类型          | 默认值     |
 | ------------- | ---------------------- | ------------- | ---------- |
@@ -201,7 +280,7 @@ config
 | labelIconList | 标签图标列表           | array[object] | -          |
 | boxStyle      | 标签容器样式           | string        | -          |
 
-config.labelIconList
+`config.labelIconList`
 
 | 属性   | 说明                   | 类型   | 默认值 |
 | ------ | ---------------------- | ------ | ------ |
@@ -211,7 +290,7 @@ config.labelIconList
 | style  | 图标样式               | string | -      |
 | method | 点击图标时触发的方法名 | string | -      |
 
-Events
+`Events`
 
 | 事件名    | 说明               | 回调参数                             |
 | --------- | ------------------ | ------------------------------------ |
@@ -219,16 +298,17 @@ Events
 
 
 
-- [x] **co-form-normal**
+#### co-form-normal (内置组件)
 
-Attributes
+`Attributes`
 
-| 属性名  | 说明                     | 类型                  | 默认值 |
-| ------- | ------------------------ | --------------------- | ------ |
-| v-model | 表单内容数据             | string/number/boolean | -      |
-| attrs   | 属性配置，具体配置见下表 | object                | -      |
+| 属性名  | 说明                                                       | 类型                  | 默认值 |
+| ------- | ---------------------------------------------------------- | --------------------- | ------ |
+| v-model | 表单内容数据                                               | string/number/boolean | -      |
+| attrs   | 属性配置，具体配置见下表                                   | object                | -      |
+| loading | 是否显示加载状态，仅当 attrs.labelType 属性为 arrow 时生效 | boolean               | false  |
 
-attrs
+`attrs`
 
 | 属性             | 说明                                                         | 类型    | 默认值                                                       |
 | ---------------- | ------------------------------------------------------------ | ------- | ------------------------------------------------------------ |
@@ -250,7 +330,7 @@ attrs
 | ellipsis         | 是否需要单行省略，仅当 labelType 属性为 text/arrow 时生效    | boolean | false                                                        |
 | ...              | CoFormLabel 组件的属性                                       |         |                                                              |
 
-attrs.labelType
+`attrs.labelType`
 
 | 类型     | 说明       |
 | -------- | ---------- |
@@ -260,7 +340,7 @@ attrs.labelType
 | textarea | 多行输入框 |
 | radio    | 单项选择器 |
 
-attrs.borderAlign
+`attrs.borderAlign`
 
 | 类型     | 说明     |
 | :------- | -------- |
@@ -268,14 +348,14 @@ attrs.borderAlign
 | bottom   | 下边框   |
 | vertical | 上下边框 |
 
-attrs.layout
+`attrs.layout`
 
 | 类型       | 说明       |
 | ---------- | ---------- |
 | horizontal | 标签在左侧 |
 | vertical   | 标签在上方 |
 
-attrs.inputType
+`attrs.inputType`
 
 | 类型          | 说明               |
 | ------------- | ------------------ |
@@ -287,7 +367,7 @@ attrs.inputType
 | safe-password | 密码安全输入键盘   |
 | nickname      | 昵称输入键盘       |
 
-Events
+`Events`
 
 | 事件名 | 说明                                                         | 回调参数                                       |
 | ------ | ------------------------------------------------------------ | ---------------------------------------------- |
@@ -295,23 +375,23 @@ Events
 | clear  | 当点击 Input 组件或者 Arrow 组件的清除按钮时触发             | 共一个参数，为当前的属性配置                   |
 | click  | 当点击 CoFormLabel 组件图标或者点击 labelType 属性为 arrow/text 类型时触发 | 共两个参数，依次为触发的事件名、当前的属性配置 |
 
-- [x] **co-form-picker**
+#### co-form-picker (内置组件)
 
-Attributes
+`Attributes`
 
 | 属性名  | 说明                     | 类型                       | 默认值 |
 | ------- | ------------------------ | -------------------------- | ------ |
 | v-model | 表单内容数据             | string/number/object/array | -      |
 | attrs   | 属性配置，具体配置见下表 | object                     | -      |
 
-attrs
+`attrs`
 
 | 属性       | 说明                                                         | 类型          | 默认值  |
 | ---------- | ------------------------------------------------------------ | ------------- | ------- |
 | pickerType | 选择器类型，具体配置见下表                                   | string        | default |
 | returnType | 返回值类型，具体配置见下表                                   | string        | value   |
 | label      | 标签内容，CoFormNormal、CoDictionaryPicker、CoPicker 组件的属性 | string        | -       |
-| dictName   | 字典名称，CoDictionaryPicker 组件的属性                      | string        | -       |
+| dictCode   | 字典编码，CoDictionaryPicker 组件的属性                      | string        | -       |
 | multiple   | 是否多选，CoDictionaryPicker、CoPicker 组件的属性            | boolean       | false   |
 | required   | 是否必填，CoDictionaryPicker、CoPicker、CoDatetimePicker 组件的属性 | boolean       | -       |
 | startDate  | 开始日期，CoDatetimePicker 组件的属性                        | string/number | -       |
@@ -319,9 +399,10 @@ attrs
 | list       | 选项列表，CoPicker 组件的属性                                | array[object] | []      |
 | labelKey   | 标签字段名，CoPicker 组件的属性                              | string        | label   |
 | valueKey   | 值字段名，CoPicker 组件的属性                                | string        | value   |
+| emitPath   | 是否返回由该节点所在的省市区的值所组成的数组，若设置 false，则只返回最后一级区域的数据，CoAreaPicker 组件的属性 | boolean       | true    |
 | ...        | CoFormNormal 组件的属性                                      |               |         |
 
-attrs.pickerType
+`attrs.pickerType`
 
 | 类型          | 说明                                  |
 | ------------- | ------------------------------------- |
@@ -335,7 +416,7 @@ attrs.pickerType
 | datetimerange | 日期时间范围选择器 - CoDatetimePicker |
 | area          | 地区选择器 - CoAreaPicker             |
 
-attrs.returnType
+`attrs.returnType`
 
 | 类型   | 说明     |
 | ------ | -------- |
@@ -343,7 +424,7 @@ attrs.returnType
 | label  | 返回标签 |
 | object | 返回对象 |
 
-Events
+`Events`
 
 | 事件名         | 说明                                                         | 回调参数                     |
 | -------------- | ------------------------------------------------------------ | ---------------------------- |
@@ -352,16 +433,16 @@ Events
 
 
 
-- [x] **co-form-cascader**
+#### co-form-cascader (内置组件)
 
-Attributes
+`Attributes`
 
 | 属性名  | 说明                     | 类型                       | 默认值 |
 | ------- | ------------------------ | -------------------------- | ------ |
 | v-model | 表单内容数据             | string/number/object/array | -      |
 | attrs   | 属性配置，具体配置见下表 | object                     | -      |
 
-attrs
+`attrs`
 
 | 属性          | 说明                                                         | 类型          | 默认值 |
 | ------------- | ------------------------------------------------------------ | ------------- | ------ |
@@ -373,14 +454,14 @@ attrs
 | showAllLevels | 是否显示选中值的完整路径                                     | boolean       | true   |
 | emitPath      | 是否返回由该节点所在的各级菜单的值所组成的数组，若设置 false，则只返回该节点的值 | boolean       | true   |
 
-attrs.returnType
+`attrs.returnType`
 
 | 类型   | 说明     |
 | ------ | -------- |
 | value  | 返回值   |
 | object | 返回对象 |
 
-Events
+`Events`
 
 | 事件名         | 说明                                                         | 回调参数                     |
 | -------------- | ------------------------------------------------------------ | ---------------------------- |
@@ -389,9 +470,9 @@ Events
 
 
 
-- [x] **co-form-upload**
+#### co-form-upload (内置组件)
 
-Attributes
+`Attributes`
 
 | 属性名        | 说明                                                         | 类型                 | 默认值 |
 | ------------- | ------------------------------------------------------------ | -------------------- | ------ |
@@ -400,23 +481,22 @@ Attributes
 | before-upload | 上传文件之前的钩子，参数为上传的文件，若返回 Promise 且被 reject，则停止上传。 | function             | -      |
 | before-remove | 删除文件之前的钩子，参数为上传的文件和上传列表，若返回 Promise 且被 reject，则停止上传。 | function             | -      |
 
-attrs
+`attrs`
 
-| 属性                         | 说明                                                       | 类型          | 默认值                                                       |
-| ---------------------------- | ---------------------------------------------------------- | ------------- | ------------------------------------------------------------ |
-| uploadType                   | 上传类型，具体配置见下表                                   | string        | image                                                        |
-| uploadConfig                 | 上传配置                                                   | object        | { count: 1, sourceType: ['album', 'camera'], sizeType: ['compressed'], } |
-| max                          | 最多上传多少张图片                                         | string        | 1                                                            |
-| required                     | 是否必填                                                   | boolean       | false                                                        |
-| disabled                     | 是否禁用                                                   | boolean       | false                                                        |
-| placeholder                  | 待上传时的占位符，仅当 uploadType 属性为 file/video 时生效 | string        | -                                                            |
-| customStyle                  | 自定义样式                                                 | string        | -                                                            |
-| customActionSheet            | 自定义菜单按钮，格式为[{label: '\*', value: '\*'}]         | array[object] | []                                                           |
-| allowOfflineUpload           | 是否允许在断网情况下上传                                   | boolean       | false                                                        |
-| allowWatermarkOriginalUpload | 是否允许水印上传后再上传水印原图                           | boolean       | false                                                        |
-| ...                          | CoFormLabel 组件的属性                                     |               |                                                              |
+| 属性               | 说明                                                       | 类型          | 默认值                                                       |
+| ------------------ | ---------------------------------------------------------- | ------------- | ------------------------------------------------------------ |
+| uploadType         | 上传类型，具体配置见下表                                   | string        | image                                                        |
+| uploadConfig       | 上传配置                                                   | object        | { count: 1, sourceType: ['album', 'camera'], sizeType: ['compressed'], } |
+| max                | 最多上传多少张图片                                         | string        | 1                                                            |
+| required           | 是否必填                                                   | boolean       | false                                                        |
+| disabled           | 是否禁用                                                   | boolean       | false                                                        |
+| placeholder        | 待上传时的占位符，仅当 uploadType 属性为 file/video 时生效 | string        | -                                                            |
+| customStyle        | 自定义样式                                                 | string        | -                                                            |
+| customActionSheet  | 自定义菜单按钮，格式为[{label: '\*', value: '\*'}]         | array[object] | []                                                           |
+| allowOfflineUpload | 是否允许在断网情况下上传                                   | boolean       | false                                                        |
+| ...                | CoFormLabel 组件的属性                                     |               |                                                              |
 
-attrs.uploadType
+`attrs.uploadType`
 
 | 类型  | 说明 |
 | ----- | ---- |
@@ -424,28 +504,27 @@ attrs.uploadType
 | file  | 文件 |
 | video | 视频 |
 
-Events
+`Events`
 
-| 事件名            | 说明                                              | 回调参数                                   |
-| ----------------- | ------------------------------------------------- | ------------------------------------------ |
-| watermarkOriginal | 水印原图上传完成后触发                            | 共一个参数，为包含水印数据和原图数据的对象 |
-| fulfilled         | 上传成功后触发                                    | 共一个参数，为上传成功后的数据             |
-| uploadRemove      | 删除上传文件后触发                                | 共一个参数，为当前删除的文件数据           |
-| * 自定义事件名    | 当点击 CoFormLabel 组件的图标触发                 | 共一个参数，为当前的属性配置               |
-| * 自定义事件名    | 设置 customActionSheet 属性时，点击自定义菜单触发 | -                                          |
-
+| 事件名         | 说明                                              | 回调参数                         |
+| -------------- | ------------------------------------------------- | -------------------------------- |
+| fulfilled      | 上传成功后触发                                    | 共一个参数，为上传成功后的数据   |
+| uploadRemove   | 删除上传文件后触发                                | 共一个参数，为当前删除的文件数据 |
+| * 自定义事件名 | 当点击 CoFormLabel 组件的图标触发                 | 共一个参数，为当前的属性配置     |
+| * 自定义事件名 | 设置 customActionSheet 属性时，点击自定义菜单触发 | -                                |
 
 
-- [x] **co-form-check-button**
 
-Attributes
+#### co-form-check-button (内置组件)
+
+`Attributes`
 
 | 属性名  | 说明                     | 类型                         | 默认值 |
 | ------- | ------------------------ | ---------------------------- | ------ |
 | v-model | 表单内容数据             | string/number/boolean/object | -      |
 | attrs   | 属性配置，具体配置见下表 | object                       | -      |
 
-attrs
+`attrs`
 
 | 属性        | 说明                     | 类型          | 默认值                                                       |
 | ----------- | ------------------------ | ------------- | ------------------------------------------------------------ |
@@ -457,7 +536,7 @@ attrs
 | disabled    | 是否禁用                 | boolean       | false                                                        |
 | ...         | CoFormLabel 组件的属性   |               |                                                              |
 
-attrs.type
+`attrs.type`
 
 | 类型    | 说明     |
 | :------ | -------- |
@@ -465,7 +544,7 @@ attrs.type
 | warning | 警告按钮 |
 | danger  | 危险按钮 |
 
-Events
+`Events`
 
 | 事件名         | 说明                              | 回调参数                     |
 | -------------- | --------------------------------- | ---------------------------- |
@@ -473,11 +552,11 @@ Events
 
 
 
-- ### co-svg-icon
+### co-svg-icon 图标
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名       | 说明             | 类型          | 默认值 |
 | ------------ | ---------------- | ------------- | ------ |
@@ -487,7 +566,7 @@ Events
 | svg          | 自定义svg        | string        | -      |
 | custom-class | 自定义class      | string/array  | -      |
 
-#### Events
+`Events`
 
 | 事件名 | 说明         | 回调参数 |
 | ------ | ------------ | -------- |
@@ -495,11 +574,11 @@ Events
 
 
 
-- ### co-button
+### co-button 按钮
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名   | 说明           | 类型    | 默认值  |
 | -------- | -------------- | ------- | ------- |
@@ -509,7 +588,7 @@ Events
 | icon     | 图标名称       | string  | -       |
 | style    | 自定义样式     | string  | -       |
 
-##### type
+`type`
 
 | 类型    | 说明     |
 | ------- | -------- |
@@ -520,13 +599,13 @@ Events
 | warning | 警告按钮 |
 | danger  | 危险按钮 |
 
-#### Events
+`Events`
 
 | 事件名 | 说明         | 回调参数 |
 | ------ | ------------ | -------- |
 | click  | 当点击时触发 | -        |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           |
 | ------- | -------------- |
@@ -534,11 +613,11 @@ Events
 
 
 
-- ### co-tag
+### co-tag 标签
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名   | 说明                     | 类型    | 默认值  |
 | -------- | ------------------------ | ------- | ------- |
@@ -548,7 +627,7 @@ Events
 | ellipsis | 是否省略                 | boolean | false   |
 | style    | 标签样式                 | string  | -       |
 
-##### type
+`type`
 
 | 类型    | 说明 |
 | ------- | ---- |
@@ -558,7 +637,7 @@ Events
 | warning | 警告 |
 | danger  | 危险 |
 
-##### effect
+`effect`
 
 | 类型  | 说明 |
 | ----- | ---- |
@@ -566,7 +645,7 @@ Events
 | dark  | 暗色 |
 | plain | 朴素 |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           |
 | ------- | -------------- |
@@ -574,11 +653,11 @@ Events
 
 
 
-- ### co-alert
+### co-alert 提示
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名           | 说明                       | 类型    | 默认值 |
 | ---------------- | -------------------------- | ------- | ------ |
@@ -593,7 +672,7 @@ Events
 | icon-color       | 图标颜色                   | string  | -      |
 | effect           | 主题                       | string  | light  |
 
-##### type
+`type`
 
 | 类型    | 说明 |
 | ------- | ---- |
@@ -602,7 +681,7 @@ Events
 | warning | 警告 |
 | error   | 错误 |
 
-##### effect
+`effect`
 
 | 类型  | 说明 |
 | ----- | ---- |
@@ -611,17 +690,17 @@ Events
 
 
 
-- ### co-menu
+### co-menu 菜单弹框
 
 ------
 
-#### Events
+`Events`
 
 | 事件名 | 说明             | 回调参数                       |
 | ------ | ---------------- | ------------------------------ |
 | click  | 点击菜单项时触发 | 共一个参数，为点击的菜单项索引 |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           | 子标签       |
 | ------- | -------------- | ------------ |
@@ -630,17 +709,17 @@ Events
 
 
 
-- ### co-menu-item
+### co-menu-item 菜单项
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名 | 说明             | 类型          | 默认值 |
 | ------ | ---------------- | ------------- | ------ |
 | index  | 菜单项的唯一标志 | string/number | -      |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           | 类型 |
 | ------- | -------------- | ---- |
@@ -648,11 +727,11 @@ Events
 
 
 
-- ### co-tree
+### co-tree 树形控件
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名        | 说明                                                         | 类型             | 默认值 |
 | ------------- | ------------------------------------------------------------ | ---------------- | ------ |
@@ -667,7 +746,7 @@ Events
 | disabled      | 复选框禁用数组，存储 id，仅当 showCheckbox 属性为 true 时生效 | array[id]        | []     |
 | id-separator  | id分隔符，默认为 - ，如果设置了 defaultValue 默认值，务必设置 idSeparator | string           | -      |
 
-#### props
+`props`
 
 | props    | 说明                                                       | 类型   | 默认值   |
 | -------- | ---------------------------------------------------------- | ------ | -------- |
@@ -676,7 +755,7 @@ Events
 | children | 指定子树为节点对象的某个属性值                             | string | children |
 | isLeaf   | 指定节点是否为叶子节点，仅当 lazy 属性为 true 的情况下生效 | string | isLeaf   |
 
-#### Events
+`Events`
 
 | 事件名       | 说明                             | 回调参数                                                     |
 | ------------ | -------------------------------- | ------------------------------------------------------------ |
@@ -686,11 +765,11 @@ Events
 
 
 
-- ### co-popup
+### co-popup 弹出框
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名               | 说明                                          | 类型                | 默认值 |
 | -------------------- | --------------------------------------------- | ------------------- | ------ |
@@ -704,7 +783,7 @@ Events
 | modal                | 是否显示遮罩                                  | boolean             | true   |
 | close-on-click-modal | 是否可以通过点击遮罩层关闭                    | boolean             | true   |
 
-#### Events
+`Events`
 
 | 事件名 | 说明             | 回调参数 |
 | ------ | ---------------- | -------- |
@@ -713,7 +792,7 @@ Events
 | close  | 当弹框关闭时触发 | -        |
 | closed | 当弹框关闭后触发 | -        |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           | 类型 |
 | ------- | -------------- | ---- |
@@ -721,11 +800,11 @@ Events
 
 
 
-- ### co-collapse
+### co-collapse 折叠面板
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名        | 说明               | 类型        | 默认值 |
 | ------------- | ------------------ | ----------- | ------ |
@@ -734,14 +813,14 @@ Events
 | open          | 是否默认是打开状态 | boolean     | false  |
 | icon-position | 展开图标的位置     | left\|right | right  |
 
-#### Events
+`Events`
 
 | 事件名 | 说明                 | 回调参数 |
 | ------ | -------------------- | -------- |
 | open   | 当折叠面板打开时触发 | -        |
 | close  | 当折叠面板关闭时触发 | -        |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明                   | 类型 |
 | ------- | ---------------------- | ---- |
@@ -751,11 +830,11 @@ Events
 
 
 
-- ### co-search
+### co-search 搜索
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名            | 说明                                                         | 类型          | 默认值           |
 | ----------------- | ------------------------------------------------------------ | ------------- | ---------------- |
@@ -772,7 +851,7 @@ Events
 | is-format         | 是否格式化搜索条件，如果是，只保留 filterOptions 属性里的字段 | boolean       | true             |
 | fixed             | 是否固定在顶部                                               | boolean       | true             |
 
-#### Events
+`Events`
 
 | 事件名         | 说明                                              | 回调参数 |
 | -------------- | ------------------------------------------------- | -------- |
@@ -780,7 +859,7 @@ Events
 | reset          | 点击重置按钮时触发                                | -        |
 | * 自定义事件名 | 点击搜索条件表单的表单项 labelType = arrow 时触发 | -        |
 
-#### Slots
+`Slots`
 
 | 插槽名       | 说明                     | 类型 |
 | ------------ | ------------------------ | ---- |
@@ -791,11 +870,11 @@ Events
 
 
 
-- ### co-footer
+### co-footer 底部栏
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名  | 说明                                 | 类型          | 默认值                                                       |
 | ------- | ------------------------------------ | ------------- | ------------------------------------------------------------ |
@@ -803,7 +882,7 @@ Events
 | fixed   | 是否固定在底部                       | boolean       | true                                                         |
 | shadow  | 是否显示阴影                         | boolean       | true                                                         |
 
-##### options
+`options`
 
 | 属性       | 说明           | 类型                                    | 默认值  |
 | ---------- | -------------- | --------------------------------------- | ------- |
@@ -813,13 +892,13 @@ Events
 | disabled   | 是否禁用       | boolean                                 | false   |
 | methodName | 回调事件名     | string                                  | click   |
 
-#### Events
+`Events`
 
 | 事件名         | 说明           | 回调参数 |
 | -------------- | -------------- | -------- |
 | * 自定义事件名 | 点击按钮时触发 | -        |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           | 类型 |
 | ------- | -------------- | ---- |
@@ -827,11 +906,11 @@ Events
 
 
 
-- ### co-load
+### co-load 自动加载
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名      | 说明                                               | 类型          | 默认值                                            |
 | ----------- | -------------------------------------------------- | ------------- | ------------------------------------------------- |
@@ -843,14 +922,14 @@ Events
 | placeholder | 暂无数据时的提示语                                 | string        | 暂无数据                                          |
 | loading     | 是否显示加载中的提示弹框                           | boolean       | true                                              |
 
-#### Events
+`Events`
 
 | 事件名        | 说明                 | 回调参数                       |
 | ------------- | -------------------- | ------------------------------ |
 | loadingChange | 当加载状态改变时触发 | 共一个参数，为改变后的加载状态 |
 | listChange    | 当列表数据改变时触发 | 共一个参数，为改变后的列表数据 |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           | 类型 |
 | ------- | -------------- | ---- |
@@ -858,11 +937,11 @@ Events
 
 
 
-- ### co-select-page
+### co-select-page 选择页
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名             | 说明                                                | 类型          | 默认值                                            |
 | ------------------ | --------------------------------------------------- | ------------- | ------------------------------------------------- |
@@ -882,7 +961,7 @@ Events
 | default-value      | 默认选中数据                                        | array         | []                                                |
 | required           | 是否必须选择数据后才能点击确定按钮                  | boolean       | true                                              |
 
-#### Events
+`Events`
 
 | 事件名            | 说明                 | 回调参数                       |
 | ----------------- | -------------------- | ------------------------------ |
@@ -890,7 +969,7 @@ Events
 | listChange        | 当列表数据改变时触发 | 共一个参数，为改变后的列表数据 |
 | update:searchData | 当查询参数改变时触发 | 共一个参数，为改变后的查询参数 |
 
-#### Slots
+`Slots`
 
 | 插槽名 | 说明         | 类型 |
 | ------ | ------------ | ---- |
@@ -898,18 +977,18 @@ Events
 
 
 
-- ### co-steps
+### co-steps 步骤条
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名         | 说明               | 类型                                   | 默认值 |
 | -------------- | ------------------ | -------------------------------------- | ------ |
 | active         | 设置当前激活步骤   | number                                 | -1     |
 | process-status | 设置当前步骤的状态 | wait\|process\|warning\|error\|success | wait   |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           | 子标签  |
 | ------- | -------------- | ------- |
@@ -917,11 +996,11 @@ Events
 
 
 
-- ### co-step
+### co-step 步骤
 
 ------
 
-#### Attributes
+`Attributes`
 
 | 属性名 | 说明                       | 类型                                   | 默认值 |
 | ------ | -------------------------- | -------------------------------------- | ------ |
@@ -930,13 +1009,13 @@ Events
 | top    | 图标与步骤条顶部之间的距离 | string                                 | 50%    |
 | status | 步骤状态                   | wait\|process\|warning\|error\|success | wait   |
 
-#### Events
+`Events`
 
 | 事件名 | 说明               | 回调参数 |
 | ------ | ------------------ | -------- |
 | click  | 当点击步骤条时触发 | -        |
 
-#### Slots
+`Slots`
 
 | 插槽名  | 说明           | 类型 |
 | ------- | -------------- | ---- |

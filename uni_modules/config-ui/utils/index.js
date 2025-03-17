@@ -38,50 +38,49 @@ const convertToChinaNum = (num) => {
 /**
  * 根据字典值来获取其字典名，或者根据字典名获取字典值
  * @param {String|Array} dictData 字典值 或 字典名
- * @param {String} dictName 字典分类
+ * @param {String} dictCode 字典编码
  * @param {String} type 获取类型，value：字典值来获取其字典名，name：根据字典名获取字典值
  * @return {String} 字典名
  */
-const getDicName = (dictData, dictName, type = 'value') => {
+const getDicName = (dictData, dictCode, type = 'value') => {
 	if (typeof dictData === 'string' && dictData.indexOf(',') !== -1) {
 		dictData = dictData.split(',')
 	}
-  const dicMap = ConfigStore.dictionary[dictName]
+
+  const dicMap = ConfigStore.dictionary[dictCode]
+  const labelKey = ConfigStore.dictConfig.labelKey
+  const valueKey = ConfigStore.dictConfig.valueKey
+
 	const dicNameFormatter = (dicMap) => {
 		let data
 		if (type === 'value') {
 			if (Reflect.toString.call(dictData) === '[object Array]') {
-        data = dictData.map((item) => dicMap.get(item).dictName).join(',')
+        data = dictData.map((item) => dicMap.get(item)[labelKey]).join(',')
 			}
 			else {
-				data = dicMap.get(dictData).dictName
+				data = dicMap.get(dictData)[labelKey]
 			}
 		}
 		else if (type === 'name') {
 			const values = Array.from(dicMap.values())
 			for (let i = 0; i < values.length; i++) {
-				if (values[i].dictName === dictData) {
-					data = values[i].dictValue
+				if (values[i][labelKey] === dictData) {
+					data = values[i][valueKey]
 					break
 				}
 			}
 		}
 		return data
 	}
+
   return new Promise((resolve, reject) => {
     if (dicMap && dicMap.size) {
       resolve(dicNameFormatter(dicMap))
     } else {
-      const mapWatch = ConfigStore.$watch(
-        () => {
-          return ConfigStore.dictionary[dictName]
-        },
-        (dicMap) => {
-          mapWatch()
-					resolve(dicNameFormatter(dicMap))
-        }
-      )
-      ConfigStore.getDictMap(dictName)
+      ConfigStore.getDictMap(dictCode)
+        .then(res => {
+          resolve(dicNameFormatter(res))
+        })
     }
   })
 }

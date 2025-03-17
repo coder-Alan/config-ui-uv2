@@ -92,7 +92,9 @@ export default {
 		}
 	},
 	mounted() {
-		const observer = uni.createIntersectionObserver(this)
+		const observer = uni.createIntersectionObserver(this, {
+			nativeMode: true
+		})
 		observer
 			.relativeToViewport()
 			.observe('.co-footer__buttons', (res) => {

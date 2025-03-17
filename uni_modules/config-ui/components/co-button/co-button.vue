@@ -1,5 +1,5 @@
 <template>
-  <button class="co-button" :type="type" :plain="plain" :disabled="disabled" :style="style" @click="$emit('click')">
+  <button class="co-button" :class="buttonClass" :disabled="disabled" :style="style" @click="$emit('click')">
     <CoSvgIcon
       v-if="icon"
       :class="$slots.default ? 'co-button-icon' : ''"
@@ -65,6 +65,17 @@ export default {
       iconSize: '32rpx',
     }
   },
+  computed: {
+    buttonClass() {
+      const classArr = []
+
+      if (this.type) classArr.push(`is-${this.type}`)
+      if (this.plain) classArr.push('is-plain')
+      if (this.disabled) classArr.push('is-disabled')
+
+      return classArr
+    }
+  },
   watch: {
     disabled: {
       handler() {
@@ -125,13 +136,13 @@ export default {
   }
 }
 
-.co-button[type=default] {
+.co-button.is-default {
   color: #606266;
   background: #fff;
   border: 1rpx solid #d4d7de;
 }
 
-.co-button[type=default][disabled] {
+.co-button.is-default.is-disabled {
   color: #a8abb2;
   background-color: #fff;
   border-color: #e4e7ed;
@@ -164,21 +175,21 @@ $light3-colors: $co-color-primary-light3, $co-color-success-light3, $co-color-in
 
 @each $theme in $themes {
   $i: index($themes, $theme);
-  $newtheme: nth($theme-colors, $i);
+  $newTheme: nth($theme-colors, $i);
   $light1-color: nth($light1-colors, $i);
   $light2-color: nth($light2-colors, $i);
   $light3-color: nth($light3-colors, $i);
 
-  .co-button[type=#{$theme}] {
-    @include co-button-normal($newtheme);
+  .co-button.is-#{$theme} {
+    @include co-button-normal($newTheme);
   }
-  .co-button[type=#{$theme}][plain] {
-    @include co-button-plain($newtheme, $light3-color, $light1-color);
+  .co-button.is-#{$theme}.is-plain {
+    @include co-button-plain($newTheme, $light3-color, $light1-color);
   }
-  .co-button[type=#{$theme}][disabled] {
+  .co-button.is-#{$theme}.is-disabled {
     @include co-button-disabled($light1-color);
   }
-  .co-button[type=#{$theme}][plain][disabled] {
+  .co-button.is-#{$theme}.is-plain.is-disabled {
     @include co-button-plain-disabled($light1-color, $light3-color, $light2-color);
   }
 }

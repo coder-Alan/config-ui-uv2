@@ -75,7 +75,7 @@ export default {
 			default: true
 		},
 		options: {
-			type: Array,
+			type: [Array, null],
 			default: () => ([])
 		},
 		labelKey: {

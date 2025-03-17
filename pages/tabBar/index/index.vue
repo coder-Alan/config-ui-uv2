@@ -28,7 +28,7 @@ export default {
           name: 'co-svg-icon',
           label: '图标',
           thumbnail: barIcon,
-          path: '/pages/subPackages/icon/icon/icon'
+          path: '/pages/subPackages/icon/icon'
         },
         {
           name: 'co-button',
@@ -46,67 +46,67 @@ export default {
           name: 'co-form',
           label: '表单',
           thumbnail: barIcon,
-          path: '/pages/subPackages/form/form/form'
+          path: '/pages/subPackages/form/form'
         },
         {
           name: 'co-tree',
           label: '树形控件',
           thumbnail: barIcon,
-          path: '/pages/subPackages/tree/tree/tree'
+          path: '/pages/subPackages/tree/tree'
         },
         {
           name: 'co-collapse',
           label: '折叠面板',
           thumbnail: barIcon,
-          path: '/pages/subPackages/collapse/collapse/collapse'
+          path: '/pages/subPackages/collapse/collapse'
         },
         {
           name: 'co-load',
           label: '自动加载',
           thumbnail: barIcon,
-          path: '/pages/subPackages/load/load/load'
+          path: '/pages/subPackages/load/load'
         },
         {
           name: 'co-popup',
           label: '弹出框',
           thumbnail: barIcon,
-          path: '/pages/subPackages/popup/popup/popup'
+          path: '/pages/subPackages/popup/popup'
         },
         {
           name: 'co-search',
           label: '搜索',
           thumbnail: barIcon,
-          path: '/pages/subPackages/search/search/search'
+          path: '/pages/subPackages/search/search'
         },
         {
           name: 'co-footer',
           label: '底部栏',
           thumbnail: barIcon,
-          path: '/pages/subPackages/footer/footer/footer'
+          path: '/pages/subPackages/footer/footer'
         },
         {
           name: 'co-step',
           label: '步骤条',
           thumbnail: barIcon,
-          path: '/pages/subPackages/step/step/step'
+          path: '/pages/subPackages/step/step'
         },
         {
           name: 'co-select-page',
           label: '选择页',
           thumbnail: barIcon,
-          path: '/pages/subPackages/select-page/select-page/select-page'
+          path: '/pages/subPackages/select-page/select-page'
         },
         {
           name: 'co-menu',
           label: '菜单弹框',
           thumbnail: barIcon,
-          path: '/pages/subPackages/menu/menu/menu'
+          path: '/pages/subPackages/menu/menu'
         },
         {
           name: 'co-alert',
           label: '提示',
           thumbnail: barIcon,
-          path: '/pages/subPackages/alert/alert/alert'
+          path: '/pages/subPackages/alert/alert'
         },
       ],
     }

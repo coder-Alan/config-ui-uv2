@@ -6,7 +6,7 @@
       :style="modalStyle"
       @click.stop="handleClose"
     ></view>
-    <view class="co-popup__inner-wrapper" :class="wrapperClass" :style="wrapperStyle">
+    <view class="inner-wrapper" :class="wrapperClass" :style="wrapperStyle">
       <view
         class="co-popup__content"
         :class="contentClass"
@@ -117,7 +117,7 @@ export default {
     },
     wrapperClass() {
       return [
-        this.placement ? `co-popup__inner-wrapper--${this.placement}` : '',
+        this.placement ? `inner-wrapper--${this.placement}` : '',
       ]
     },
     wrapperStyle() {
@@ -156,10 +156,12 @@ export default {
 
           this.popupShow = true
 
-          const observer = uni.createIntersectionObserver(this)
+          const observer = uni.createIntersectionObserver(this, {
+            nativeMode: true
+          })
           observer
             .relativeToViewport()
-            .observe('.co-popup__inner-wrapper', (res) => {
+            .observe('.inner-wrapper', (res) => {
               if (res.intersectionRatio > 0) {
                 this.contentShow = true
                 observer.disconnect()
@@ -211,82 +213,80 @@ export default {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
-    // z-index: 10;
     opacity: 0;
     transition: opacity .3s;
+
+    &--show {
+      opacity: 1;
+    }
+
+    &--hide {
+      opacity: 0;
+    }
   }
 
-  &__modal--show {
-    opacity: 1;
-  }
-
-  &__modal--hide {
-    opacity: 0;
-  }
-
-  &__inner-wrapper {
+  .inner-wrapper {
     position: fixed;
-    // bottom: 0;
     left: 0;
     height: fit-content;
     overflow: hidden;
 
+    &--top {
+      top: 0;
+      padding-bottom: 20rpx;
+    }
+
+    &--center {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20rpx;
+    }
+
+    &--bottom {
+      bottom: 0;
+      padding-top: 20rpx;
+    }
+
     .co-popup__content {
-      // height: 80%;
       width: 100vw;
       display: flex;
       flex-direction: column;
       min-height: 50rpx;
       background-color: #FFFFFF;
-      // transform: translateY(100%);
       transition: transform .3s, opacity .3s;
-      // border-radius: 20rpx 20rpx 0 0;
       overflow: hidden;
-      // z-index: 2023;
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, .2);
+
+      &--show {
+        // 这里设置 transform 为 none ，是为了避免因 fiexd 导致子弹窗定位异常
+        transform: none;
+      }
+
+      &--top--round {
+        border-radius: 0 0 20rpx 20rpx;
+      }
+
+      &--top--hide {
+        transform: translateY(-100%);
+      }
+
+      &--bottom--round {
+        border-radius: 20rpx 20rpx 0 0;
+      }
+
+      &--bottom--hide {
+        transform: translateY(100%);
+      }
+
+      &--center--round {
+        border-radius: 20rpx;
+      }
+
+      &--center--hide {
+        opacity: 0;
+      }
     }
-
-    .co-popup__content--show {
-      // 这里设置 transform 为 none ，是为了避免因 fiexd 导致子弹窗定位异常
-      transform: none;
-    }
-
-    .co-popup__content--top--round {
-      border-radius: 0 0 20rpx 20rpx;
-    }
-
-    .co-popup__content--top--hide {
-      transform: translateY(-100%);
-    }
-
-    .co-popup__content--bottom--round {
-      border-radius: 20rpx 20rpx 0 0;
-    }
-
-    .co-popup__content--bottom--hide {
-      transform: translateY(100%);
-    }
-
-    .co-popup__content--center--round {
-      border-radius: 20rpx;
-    }
-
-    .co-popup__content--center--hide {
-      opacity: 0;
-    }
-  }
-
-  &__inner-wrapper--top {
-    top: 0;
-  }
-
-  &__inner-wrapper--center {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  &__inner-wrapper--bottom {
-    bottom: 0;
   }
 }
 </style>

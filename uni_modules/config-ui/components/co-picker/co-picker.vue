@@ -41,7 +41,10 @@
 					</CoCheckBar>
 				</scroll-view>
 			</template>
-			<view v-else class="co-picker__tip-null">
+			<view v-else-if="$slots.default" class="f1">
+				<slot></slot>
+			</view>
+			<view v-else class="empty-tip f1">
 				暂无数据
 			</view>
 		</view>
@@ -139,7 +142,13 @@ export default {
 	},
 	methods: {
 		getDefaultCheck(data) {
-			if (!this.list || (typeof data !== 'number' && !data)) return
+			if (!this.list) return
+			if (typeof data !== 'number' && !data) {
+				if (!this.multiple) {
+					this.singleCheckedData = this.list[0]
+				}
+				return
+			}
 
 			let value
 			if (Reflect.toString.call(data) === '[object Object]') {
@@ -149,7 +158,7 @@ export default {
 				value = data
 			}
 
-			if (!value && typeof(value) !== 'number') return
+			if (typeof value !== 'number' && !value) return
 
 			if (this.multiple) {
 				for (let i = 0; i < this.list.length; i++) {
@@ -226,13 +235,16 @@ export default {
 		}
 	}
 
-	&__tip-null {
+	.empty-tip {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		flex: 1;
 		font-size: 28rpx;
 		color: #aaa;
+	}
+
+	.f1 {
+		flex: 1;
 		overflow: hidden;
 	}
 }

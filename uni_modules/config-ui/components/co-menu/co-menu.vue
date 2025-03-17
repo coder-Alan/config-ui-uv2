@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import ConfigStore from '../../utils/config-store.js'
+
 /**
  * Menu
  * @description 菜单组件
@@ -31,6 +33,11 @@ export default {
       isSliding: false, // 用于标记是否发生了滑动
     }
   },
+  computed: {
+    windowInfo() {
+      return ConfigStore.windowInfo
+    },
+  },
   mounted() {
     const query = uni.createSelectorQuery().in(this)
     query.select('#menuWrapper').boundingClientRect()
@@ -44,9 +51,8 @@ export default {
       this.menuWidth = width
     })
 
-    const systemInfo = uni.getSystemInfoSync()
-    this.windowHeight = systemInfo.windowHeight
-    this.windowWidth = systemInfo.windowWidth
+    this.windowHeight = this.windowInfo.windowHeight
+    this.windowWidth = this.windowInfo.windowWidth
   },
   methods: {
     showMenu(e) {

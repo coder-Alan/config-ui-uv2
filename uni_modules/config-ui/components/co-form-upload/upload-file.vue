@@ -156,6 +156,8 @@ export default {
 
 <style lang="scss" scoped>
 .co-upload-file {
+	padding-top: 12rpx;
+
 	&__item {
 		display: flex;
 		align-items: center;

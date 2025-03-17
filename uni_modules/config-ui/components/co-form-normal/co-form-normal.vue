@@ -14,22 +14,23 @@
 			</template>
 		</CoInput>
 		<!-- 选择箭头 -->
-		<Arrow
+		<CoArrow
 			v-else-if="config.labelType === 'arrow'"
 			:value="modelValue"
 			:config="config"
+			:loading="loading"
 			class="co-form-normal-content"
 			@clear="onClear"
-		></Arrow>
+		></CoArrow>
 		<!-- 文本 -->
-		<Text
+		<CoText
 			v-else-if="config.labelType === 'text'"
 			:value="modelValue"
 			:config="config"
 			class="co-form-normal-content"
 		>
 			<slot v-if="config.slot"></slot>
-		</Text>
+		</CoText>
 		<!-- 多行输入框 -->
 		<view v-else-if="config.labelType === 'textarea'" class="co-form-normal-content">
 			<textarea
@@ -44,12 +45,12 @@
 			></textarea>
 		</view>
 		<!-- radio 单项选择器 -->
-		<Radio
+		<CoRadio
 			v-else-if="config.labelType === 'radio'"
 			v-model="modelValue"
 			:config="config"
 			class="co-form-normal-content"
-		></Radio>
+		></CoRadio>
 		<slot v-else></slot>
 	</view>
 </template>
@@ -102,6 +103,7 @@ import CoText from './co-text'
  * 	@field {Boolean} clear 是否显示清除按钮，仅当 labelType 属性为 arrow 时生效
  * 	@field {String} methodName 点击事件的回调名称，仅当 labelType 属性为 text/arrow 时生效
  * 	@field {Boolean} ellipsis 是否需要单行省略，仅当 labelType 属性为 text/arrow 时生效
+ * @property {Boolean} loading 是否显示加载状态，仅当 labelType 属性为 arrow 时生效
  * @event blur 当 textarea 组件失去焦点时触发
  * @event clear 当点击 Input 组件或者 Arrow 组件的清除按钮时触发
  * @event click 当点击 CoFormLabel 组件图标或者点击 labelType 属性为 arrow/text 类型时触发
@@ -124,7 +126,11 @@ export default {
 		attrs: {
 			type: [Object, null],
 			default: () => ({})
-		}
+		},
+		loading: {
+			type: Boolean,
+			default: false
+		},
 	},
 	computed: {
 		modelValue: {

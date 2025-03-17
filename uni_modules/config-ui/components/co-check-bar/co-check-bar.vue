@@ -1,5 +1,5 @@
 <template>
-	<view class="co-check-bar co-check" :class="{ checked: currChecked, disabled }" @click="onClick">
+	<view class="co-check-bar co-check" :class="barClass" @click="onClick">
 		<slot></slot>
 	</view>
 </template>
@@ -50,13 +50,22 @@ export default {
 			currChecked: false
 		}
 	},
+	computed: {
+		barClass() {
+			const classArr = []
+			if (this.currChecked) classArr.push('is-checked')
+			if (this.disabled) classArr.push('is-disabled')
+
+			return classArr
+		},
+	},
 	watch: {
 		checked: {
 			handler(val) {
 				this.currChecked = val
 			},
 			immediate: true
-		}
+		},
 	},
 	methods: {
 		onClick() {
@@ -76,7 +85,7 @@ export default {
 	position: relative;
 }
 
-.co-check[class*='checked']::after {
+.is-checked::after {
 	content: '✓';
 	position: absolute;
 	right: 24rpx;
@@ -87,7 +96,7 @@ export default {
 	font-weight: bold;
 }
 
-.co-check[class*='disabled']::before {
+.is-disabled::before {
 	content: '';
 	position: absolute;
 	left: 0;

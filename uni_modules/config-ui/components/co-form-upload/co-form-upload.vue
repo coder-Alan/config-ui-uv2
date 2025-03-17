@@ -47,11 +47,9 @@ import ConfigStore from '../../utils/config-store.js'
  *  @field {String} customStyle 自定义样式
  *  @field {Array<object>} customActionSheet 自定义菜单按钮，格式为[{label: '*', value: '*'}]
  *  @field {Boolean} allowOfflineUpload 是否允许在断网情况下上传
- *  @field {Boolean} allowWatermarkOriginalUpload 是否允许水印上传后再上传水印原图
  * 	@field ... CoFormLabel 组件的属性
  * @property {Function} before-upload 上传文件之前的钩子，参数为上传的文件，若返回 Promise 且被 reject，则停止上传。
  * @property {Function} before-remove 删除文件之前的钩子，参数为上传的文件和上传列表，若返回 Promise 且被 reject，则停止上传。
- * @event watermarkOriginal 水印原图上传完成后触发，返回水印数据和原图数据
  * @event fulfilled 上传成功后触发
  * @event uploadRemove 删除上传文件后触发
  * @event * 自定义事件名 当点击 CoFormLabel 组件的图标触发
@@ -172,7 +170,6 @@ export default {
         },
         customActionSheet: [],
         allowOfflineUpload: false,
-        allowWatermarkOriginalUpload: false,
       }
 
       const newAttrs = Object.assign(defaultAttrs, this.attrs)
@@ -244,7 +241,6 @@ export default {
       if (this.config.uploadType === 'image') {
         actionSheet = [
           { label: '拍摄', value: 'camera' },
-          { label: '水印拍摄', value: 'watermark' },
           { label: '从相册选择', value: 'album' },
         ]
       }
@@ -269,58 +265,9 @@ export default {
       uni.showActionSheet({
         itemList: list.map(item => item.label),
         success: (res) => {
-          if (list[res.tapIndex].value !== 'watermark') {
-            this.customChooseImage([list[res.tapIndex].value])
-          }
-          else {
-            uni.navigateTo({
-              url: '/page_common/watermarkImage',
-              events: {
-                finishEmit: async (data) => {
-                  let path
-                  try{
-                    // 压缩的临时路径
-                    const { tempFilePath } = await wx.compressImage({
-                      src: data.path,
-                      quality: this.compressionQuality
-                    })
-                    path = tempFilePath
-                  }catch(e){
-                    path = data.path
-                  }
-
-                  const { digest: md5, size } = await getFileInfo(path)
-                  Object.assign(data, {
-                    md5,
-                    size,
-                    path
-                  })
-                  // 上传水印图片
-                  const watermarkData = await this.upload(data)
-
-                  // 上传水印原图，把附件信息传到外部
-                  if (this.config.allowWatermarkOriginalUpload) {
-                    if (this.hasNet && watermarkData) {
-                      const originalData = await handleUpload({ path: data.originalPath })
-                      this.$emit('click', 'watermarkOriginal', {
-                        watermark: watermarkData,
-                        original: originalData,
-                      })
-                    }
-
-                    if (!this.hasNet && this.config.allowOfflineUpload) {
-                      this.$emit('click', 'watermarkOriginal', {
-                        watermark: watermarkData,
-                        original: data,
-                      })
-                    }
-                  }
-                }
-              }
-            })
-          }
+          this.customChooseImage([list[res.tapIndex].value])
         },
-        fail: function (res) {
+        fail: (res) => {
           console.warn(res.errMsg)
         }
       })
@@ -336,7 +283,7 @@ export default {
             let path
             try{
               // 压缩的临时路径
-              const { tempFilePath } = await wx.compressImage({
+              const { tempFilePath } = await uni.compressImage({
                 src: res.tempFiles[i].path,
                 quality: this.compressionQuality
               })

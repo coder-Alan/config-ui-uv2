@@ -3,6 +3,7 @@
 		<CoFormNormal
 			v-model="valueName"
 			:attrs="config"
+			:loading="loading"
 			@click="onClick"
 			@clear="onClear(false)"
 		></CoFormNormal>
@@ -10,7 +11,7 @@
 			v-if="config.pickerType === 'dictionary'"
 			:show.sync="showSelect"
 			:title="config.label"
-			:dict-name="config.dictName"
+			:dict-code="config.dictCode"
 			:multiple="config.multiple"
 			:default-value="modelValue"
 			:clear="!config.required"
@@ -38,6 +39,7 @@
 		<CoAreaPicker
 			v-else-if="config.pickerType === 'area'"
 			:show.sync="showSelect"
+			:emit-path="config.emitPath"
 			@confirm="onConfirm"
 			@clear="onClear"
 		></CoAreaPicker>
@@ -89,7 +91,7 @@ import { getDicName } from '../../utils/index.js'
  * 	 	@value object 返回对象
  * 		@default value
  *  @field {String} label 标签内容 【CoFormNormal、CoDictionaryPicker、CoPicker】
- *  @field {String} dictName 字典名称 【CoDictionaryPicker】
+ *  @field {String} dictCode 字典编码 【CoDictionaryPicker】
  *  @field {Boolean} multiple 是否多选 【CoDictionaryPicker、CoPicker】
  *  @field {Boolean} required 是否必填 【CoDictionaryPicker、CoPicker、CoDatetimePicker】
  *  @field {String|Number} startDate 开始日期 【CoDatetimePicker】
@@ -97,6 +99,7 @@ import { getDicName } from '../../utils/index.js'
  *  @field {Array<object>} list 选项列表 【CoPicker】
  *  @field {String} labelKey 标签字段名 【CoPicker】
  *  @field {String} valueKey 值字段名 【CoPicker】
+ *  @field {String} emitPath 是否返回由该节点所在的省市区的值所组成的数组，若设置 false，则只返回最后一级区域的数据 【CoAreaPicker】
  * 	@field ... CoFormNormal 组件的属性
  * @event clear 当点击 CoPicker 组件的清除按钮触发或者点击 CoFormNormal 组件里面的 Arrow 组件的清除按钮触发
  * @event click 当点击 CoFormNormal 组件里面的 CoFormLabel 组件的图标触发
@@ -128,6 +131,7 @@ export default {
 			valueName: '',
 			optionMap: new Map(), // 仅 pickerType = default 生效，用于快速获取选项的label
 			isSelfChange: false, // 是否是内部改变数据
+			loading: false, // 字典选择器是否加载中
 		}
 	},
 	computed: {
@@ -150,7 +154,7 @@ export default {
 				disabled: false,
 				borderAlign: 'bottom',
 				list: [],
-				dictName: '',
+				dictCode: '',
 				returnType: 'value',
 				multiple: false,
 			}
@@ -178,12 +182,7 @@ export default {
 			handler(newVal) {
 				// 如果不是自身主动改变，则说明是外部数据的传入，需要回显
 				if (!this.isSelfChange) {
-					if (!newVal) {
-						this.valueName = ''
-					}
-					else {
-						this.getValueName()
-					}
+					this.getValueName()
 				}
 				else {
 					this.isSelfChange = false
@@ -194,18 +193,16 @@ export default {
 	},
 	methods: {
 		getValueName() {
-			const data = this.modelValue
-			if (!data) {
-				this.valueName = ''
-				return
+			if (!this.modelValue) {
+				return this.valueName = ''
 			}
 
 			const { pickerType } = this.config
-			if (pickerType === 'map') {
+			if (pickerType === 'dictionary') {
 				this.getDictionaryPickerLabel()
 			}
 			else if (['datetime', 'time', 'date', 'area'].includes(pickerType)) {
-				this.valueName = data
+				this.valueName = this.modelValue
 			}
 			else if (pickerType === 'default') {
 				this.getDefaultPickerLabel()
@@ -214,7 +211,7 @@ export default {
 		async getDictionaryPickerLabel() {
 			let valueName = ''
 			const data = this.modelValue
-			const { returnType, dictName, multiple } = this.config
+			const { returnType, dictCode, multiple } = this.config
 
 			if (Reflect.toString.call(data) === '[object Object]') {
 				if (Reflect.has(data, 'label')) {
@@ -222,29 +219,33 @@ export default {
 						valueName = data.label
 					}
 					else if (data.value) {
-						valueName = await getDicName(data.value, dictName)
+						this.loading = true
+						valueName = await getDicName(data.value, dictCode)
             this.modelValue = {
               label: valueName,
               value: data.value
             }
+						this.loading = false
 					}
 				}
         this.valueName = valueName
 				return
 			}
 
+			this.loading = true
 			if (multiple) {
 				const valueNames = []
 				for (let i = 0; i < data.length; i++) {
-					const name = await getDicName(data[i], dictName)
+					const name = await getDicName(data[i], dictCode)
 					valueNames.push(name)
 				}
 				valueName = valueNames.join(',')
 			}
 			else {
-				valueName = await getDicName(data, dictName)
+				valueName = await getDicName(data, dictCode)
 			}
 			this.valueName = valueName
+			this.loading = false
 
 			if (returnType === 'object') {
 				this.modelValue = {

@@ -6,11 +6,19 @@
 		:multiple="multiple"
 		:default-value="defaultValue"
 		:clear="clear"
-		label-key="dictName"
-		value-key="dictValue"
+		:label-key="labelKey"
+		:value-key="valueKey"
 		@clear="onClear"
 		@confirm="onConfirm"
-	></CoPicker>
+	>
+		<view v-if="loading" class="dict-loading">
+			<view class="co-loading-circle"></view>
+			<view class="loading-text">正在获取中...</view>
+		</view>
+		<view v-else class="tip-null">
+			暂无数据
+		</view>
+	</CoPicker>
 </template>
 
 <script>
@@ -23,7 +31,7 @@ import ConfigStore from '../../utils/config-store'
  * @description 字典选择器
  * @property {Boolean} show 是否显示选择器
  * @property {String} title 选择器标题
- * @property {String} dictName 字典名称
+ * @property {String} dictCode 字典编码
  * @property {Boolean} multiple 是否多选
  * @property {Boolean} clear 是否显示清除按钮
  * 	@default true
@@ -47,7 +55,7 @@ export default {
 			type: String,
 			default: ''
 		},
-		dictName: {
+		dictCode: {
 			type: String,
 			default: ''
 		},
@@ -64,6 +72,14 @@ export default {
 			default: ''
 		},
 	},
+	data() {
+		return {
+			list: [],
+			labelKey: ConfigStore.dictConfig.labelKey,
+			valueKey: ConfigStore.dictConfig.valueKey,
+			loading: false,
+		}
+	},
 	computed: {
 		showModelValue: {
 			get() {
@@ -73,13 +89,17 @@ export default {
 				this.$emit('update:show', val)
 			}
 		},
-		list() {
-			const dicMap = ConfigStore.dictionary[this.dictName]
-			return dicMap ? Array.from(dicMap.values()) : dicMap
-		}
 	},
 	created() {
-		this.dictName && !this.list && ConfigStore.getDictMap(this.dictName)
+		this.loading = true
+		ConfigStore.getDictMap(this.dictCode)
+			.then(dictMap => {
+				this.list = Array.from(dictMap.values())
+				this.loading = false
+			})
+			.catch(() => {
+				this.loading = false
+			})
 	},
 	methods: {
 		onConfirm(e) {
@@ -91,3 +111,32 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss" scoped>
+@import '../../styles/loading.scss';
+
+.dict-loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: rgba(#576b95, 0.8);
+
+	.co-loading-circle {
+		border-color: rgba(#576b95, 0.6);
+	}
+
+	.loading-text {
+		margin-left: 10rpx;
+	}
+}
+
+.tip-null {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	font-size: 28rpx;
+	color: #aaa;
+}
+</style>

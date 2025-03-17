@@ -2,8 +2,10 @@
   width: 20rpx;
   height: 20rpx;
 	margin-left: 10rpx;
-  border: 4rpx solid #999;
-  border-top-color: transparent;
+  border-width: 4rpx;
+  border-style: solid;
+  border-color: #999;
+  border-top-color: transparent !important;
   border-radius: 100%;
   animation: circle infinite 0.75s linear;
 }

@@ -1,6 +1,6 @@
 import ConfigStore from '../utils/config-store';
 
-const FileSystemManager = wx.getFileSystemManager()
+const FileSystemManager = uni.getFileSystemManager()
 
 /**
  * 比如可以根据附件信息的 fileId 拼出文件的下载地址
@@ -18,7 +18,7 @@ function getFileUrl(fileId) {
  */
 function downloadFile(url) {
 	return new Promise((resolve, reject) => {
-		wx.downloadFile({
+		uni.downloadFile({
 			url,
 			header: ConfigStore.downloadConfig.header,
 			timeout: ConfigStore.downloadConfig.timeout,

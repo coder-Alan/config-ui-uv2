@@ -1,23 +1,28 @@
 <template>
 	<view class="co-arrow" :class="arrowClass" @click="onClick">
+		<view v-if="loading" class="co-loading-circle"></view>
 		<view
 			v-if="value"
-			class="co-arrow__value-break"
+			class="arrow-text"
 			:style="{ color: config.valueColor }"
 			:class="{ 'co-singe-ellipsis': config.ellipsis }"
-		>{{ value }}</view>
+		>
+			{{ value }}
+		</view>
 		<template v-if="!config.disabled">
 			<view
-				v-if="config.showTip && !value"
-				class="co-arrow__value-break"
+				v-if="config.showTip && !value && !loading"
+				class="arrow-text"
 				:style="{ color: config.placeholderColor }"
-			>{{ config.placeholder || '请选择' }}</view>
+			>
+				{{ config.placeholder || '请选择' }}
+			</view>
 			<CoSvgIcon
 				v-if="!config.clear || !value"
 				icon="arrowRight"
 				size="18"
 				color="#c0c4cc"
-				class="co-arrow__icon"
+				class="arrow-icon"
 			></CoSvgIcon>
 		</template>
 		<CoSvgIcon
@@ -25,7 +30,7 @@
 			icon="circleClose"
 			size="18"
 			color="#c0c4cc"
-			class="co-arrow__icon"
+			class="arrow-icon"
 			@click="$emit('clear')"
 		></CoSvgIcon>
 	</view>
@@ -48,10 +53,14 @@ export default {
 			type: Object,
 			default: () => ({})
 		},
+		loading: {
+			type: Boolean,
+			default: false
+		},
 	},
 	computed: {
 		arrowClass() {
-			return this.config.layout ? `co-arrow__${this.config.layout}` : ''
+			return this.config.layout ? `is-${this.config.layout}` : ''
 		}
 	},
 	methods: {
@@ -65,24 +74,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../../styles/loading.scss';
+
 .co-arrow {
 	display: flex;
 	align-items: center;
 
-	&__value-break {
+	.arrow-text {
 		word-break: break-all;
 	}
 
-	&__horizontal {
-		justify-content: flex-end;
-	}
-
-	&__vertical {
-		justify-content: space-between;
-	}
-
-	&__icon {
+	.arrow-icon {
 		padding-left: 6rpx;
 	}
+}
+
+.is-horizontal {
+	justify-content: flex-end;
+
+	.arrow-text {
+		padding-left: 12rpx;
+	}
+}
+
+.is-vertical {
+	justify-content: space-between;
 }
 </style>
